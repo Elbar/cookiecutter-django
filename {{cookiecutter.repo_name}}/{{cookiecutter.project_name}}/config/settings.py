@@ -81,6 +81,7 @@ DATABASES = {
         'NAME': '{{cookiecutter.project_name}}',
         'USER': '{{cookiecutter.project_name}}',  # TODO
         'PASSWORD': '{{cookiecutter.project_name}}',  # TODO
+        'TEST_CHARSET': 'utf8',
     },
 }
 
