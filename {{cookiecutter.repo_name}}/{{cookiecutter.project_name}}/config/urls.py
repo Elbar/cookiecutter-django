@@ -14,5 +14,5 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'),
         name="home"),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^users/', include("users.urls", namespace="users")),
+    url(r'^users/', include("apps.users.urls", namespace="users")),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
