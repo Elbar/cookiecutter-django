@@ -1,9 +1,9 @@
 from settings import *
 
 DEBUG = True
-TEMPLATE_DEBUG = True
+TEMPLATES[0]['OPTIONS']['debug'] = True
 
-SECRET_KEY = '!!!change_me!!!'
+SECRET_KEY = 'just_work'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -13,3 +13,12 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+LOGGING['loggers']['django.db.backends'] = {
+    'level': "DEBUG",
+    'propagate': True,
+}
+LOGGING['loggers']['']['level'] = "DEBUG"

@@ -12,6 +12,12 @@ nosetests.xml
 *~
 *.swp
 *.swo
+/.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/dictionaries
+/.vagrant
+/.cache
+*.TODO
 node_modules/
 .sass-cache
 settings_local.py

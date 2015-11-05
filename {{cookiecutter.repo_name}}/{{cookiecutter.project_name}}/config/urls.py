@@ -14,5 +14,8 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='pages/home.html'),
         name="home"),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^users/', include("apps.users.urls", namespace="users")),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    {% if cookiecutter.custom_user.lower() == 'true' %}url(r'^users/', include("apps.users.urls", namespace="users")),{% endif %}
+)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

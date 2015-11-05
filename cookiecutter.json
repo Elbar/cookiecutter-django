@@ -1,10 +1,14 @@
 {
     "project_name": "project_name",
     "repo_name":"repo_name",
-    "author_name": "Your Name",
-    "email": "Your email",
+    "author_name": "st4lk",
+    "email": "alexevseev@gmail.com",
     "description": "A short description of the project.",
-    "year": "2014",
+    "year": "2015",
     "domain_name": "example.com",
+    "custom_user": false,
+    "include_auth": false,
+    "account_templates": false,
+    "extract_settings_local": true,
     "version": "0.1.0"
 }

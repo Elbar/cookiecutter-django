@@ -10,78 +10,86 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from os.path import join
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''  # TODO
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-TEMPLATE_DEBUG = DEBUG
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ADMINS = (
     ('{{cookiecutter.author_name}}', '{{cookiecutter.email}}'),
 )
 
-# Hosts/domain names that are valid for this site
-# See https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []  # TODO
+
+# Settings checklist https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__{default_secret_key}__')
+
+DEBUG = os.environ.get('DJANGO_DEBUG', False)
+
+ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOSTS')] if os.environ.get('DJANGO_ALLOWED_HOSTS', None) else []
 
 
 # Application definition
 
-DJANGO_APPS = (
+INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
+    # local apps
+{% if cookiecutter.custom_user.lower() == 'true' %}    'apps.users',{% endif %}
 )
-THIRD_PARTY_APPS = (
-    'south',  # Database migration helpers
-)
-
-# Apps specific for this project go here.
-LOCAL_APPS = (
-    'apps.users',
-)
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 )
 
-ROOT_URLCONF = 'tttest.urls'
+ROOT_URLCONF = 'config.urls'
 
-WSGI_APPLICATION = 'tttest.wsgi.application'
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'debug': os.environ.get('DJANGO_TEMPLATE_DEBUG', os.environ.get('DJANGO_DEBUG', False)),
+        },
+    },
+]
+
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'NAME': '{{cookiecutter.project_name}}',
-        'USER': '{{cookiecutter.project_name}}',  # TODO
-        'PASSWORD': '{{cookiecutter.project_name}}',  # TODO
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', '{{cookiecutter.project_name}}'),
+        'USER': os.environ.get('DJANGO_DB_USER', '{{cookiecutter.project_name}}'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', '{{cookiecutter.project_name}}'),
         'TEST_CHARSET': 'utf8',
+        'CONN_MAX_AGE': os.environ.get('DJANGO_DB_CONN_MAX_AGE', 60),
+        'ATOMIC_REQUESTS': os.environ.get('DJANGO_DB_ATOMIC_REQUESTS', 'True').capitalize() == 'True',
     },
 }
 
@@ -89,114 +97,52 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': ''
-        }
+    }
 }
 
-########## TEMPLATE CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-)
+# Internationalization
+# https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-TEMPLATE_DIRS = (
-    join(BASE_DIR, 'templates'),
-)
-########## END TEMPLATE CONFIGURATION
+LANGUAGE_CODE = 'en-us'
 
-########## STATIC FILE CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-# https://docs.djangoproject.com/en/dev/howto/static-files/
-STATIC_ROOT = join(os.path.dirname(BASE_DIR), 'staticfiles')
+TIME_ZONE = 'Europe/Moscow'
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+SITE_ID = 1
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.8/howto/static-files/
+
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
-    join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = '/var/www/{{cookiecutter.project}}/static'  # dir must have corresponding access rights
 
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
-########## END STATIC FILE CONFIGURATION
-
-########## MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = join(BASE_DIR, 'media')
-
+MEDIA_ROOT = '/var/www/{{cookiecutter.project}}/media'  # dir must have corresponding access rights
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
-########## END MEDIA CONFIGURATION
-
-########## URL Configuration
-ROOT_URLCONF = 'config.urls'
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = 'config.wsgi.application'
-########## End URL Configuration
-
-########## AUTHENTICATION CONFIGURATION
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-)
-########## END AUTHENTICATION CONFIGURATION
-
-########## Custom user app defaults
-# Select the correct user model
+{% if cookiecutter.custom_user.lower() == 'true' %}
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "users:redirect"
-########## END Custom user app defaults
-
-########## SLUGLIFIER
-AUTOSLUG_SLUGIFY_FUNCTION = "slugify.slugify"
-########## END SLUGLIFIER
-
-########## Mail settings
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 1025
+{% endif %}
+# Mail settings
+# dummy server:
+# python -m smtpd -n -c DebuggingServer localhost:1025
+EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST', "localhost")
+EMAIL_PORT = os.environ.get('DJANGO_EMAIL_PORT', 1025)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-########## End mail settings
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
-TIME_ZONE = 'Europe/Moscow'
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#language-code
-LANGUAGE_CODE = 'en-us'
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
-SITE_ID = 1
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
-USE_I18N = True
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
-USE_TZ = True
-
-
-########## LOGGING CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -227,24 +173,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'main_formatter',
         },
-        'production_file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '../logs/main.log',
-            'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 7,
-            'formatter': 'main_formatter',
-            'filters': ['require_debug_false'],
-        },
-        'debug_file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '../logs/main_debug.log',
-            'maxBytes': 1024*1024*5,  # 5 MB
-            'backupCount': 7,
-            'formatter': 'main_formatter',
-            'filters': ['require_debug_true'],
-        },
         'null': {
             "class": 'django.utils.log.NullHandler',
         }
@@ -262,12 +190,11 @@ LOGGING = {
             'handlers': ['null', ],
         },
         '': {
-            'handlers': ['console', 'production_file', 'debug_file'],
-            'level': "DEBUG",
+            'handlers': ['console'],
+            'level': "INFO",
         },
     }
 }
-########## END LOGGING CONFIGURATION
 
 try:
     from settings_local import *

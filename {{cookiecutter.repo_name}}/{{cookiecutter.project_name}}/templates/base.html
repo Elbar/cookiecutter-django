@@ -1,5 +1,5 @@
 {% raw %}{% load staticfiles i18n %}<!DOCTYPE html>
-<html lang="en" ng-app>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endraw %}{{ cookiecutter.project_name }}{% raw %}{% endblock title %}</title>
@@ -25,20 +25,15 @@
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     {% endblock %}
 
-    {% block angular %}
-      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
-    {% endblock %}
-
   </head>
 
   <body>
 
     <div class="header navbar">
       <div class="container">
-        <a class="navbar-brand" href="/">{% endraw %}{{ cookiecutter.project_name }}{% raw %}</a>
+        <a class="navbar-brand" href="{% url 'home' %}">{% endraw %}{{ cookiecutter.project_name }}{% raw %}</a>
         <ul class="nav navbar-nav">
-          <li class="active"><a href="{% url 'home' %}">Home</a></li>
-
+        {% endraw %}{% if cookiecutter.include_auth.lower() == 'true' %}{% raw %}
           {% if request.user.is_authenticated %}
             <li><a href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a></li>
             <li><a href="#">{% trans "Logout" %}</a></li>
@@ -46,6 +41,7 @@
             <li><a href="#">{% trans "Sign Up" %}</a></li>
             <li><a href="#">{% trans "Log In" %}</a></li>
           {% endif %}
+        {% endraw %}{% endif %}{% raw %}
         </ul>
       </div>
     </div>
@@ -59,7 +55,7 @@
       {% endif %}
 
       {% block content %}
-        <p>Use this document as a way to quick start any new project.</p>
+        <p>Hello, world!</p>
       {% endblock content %}
 
     </div> <!-- /container -->
