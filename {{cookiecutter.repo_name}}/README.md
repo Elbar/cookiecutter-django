@@ -38,6 +38,7 @@ In short:
 - `heroku ps` debug
 - `heroku run python manage.py shell` debug
 - `heroku logs` logs
+- `heroku config:set AWS_ACCESS_KEY=xxx AWS_SECRET_KEY=yyy` set environment variables
 - `heroku apps` app list
 - `heroku apps:destroy --app <app-name> --confirm <app-name>` completely destroy app on heroku
 {% endif %}
