@@ -126,10 +126,10 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = '/var/www/{{cookiecutter.project}}/static'  # dir must have corresponding access rights
+STATIC_ROOT = '/var/www/{{cookiecutter.project_name}}/static'  # dir must have corresponding access rights
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
-MEDIA_ROOT = '/var/www/{{cookiecutter.project}}/media'  # dir must have corresponding access rights
+MEDIA_ROOT = '/var/www/{{cookiecutter.project_name}}/media'  # dir must have corresponding access rights
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
 {% if cookiecutter.custom_user.lower() == 'true' %}
@@ -195,6 +195,24 @@ LOGGING = {
         },
     }
 }
+
+{% if cookiecutter.heroku %}
+if 'DYNO' in os.environ:
+    # Heroku settings
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config()
+
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    # Allow all host headers
+    ALLOWED_HOSTS = ['*']
+
+    # Static asset configuration
+    STATIC_ROOT = 'staticfiles'
+    MEDIA_ROOT = ''
+    STATICFILES_DIRS = ()
+{% endif %}
 
 try:
     from settings_local import *

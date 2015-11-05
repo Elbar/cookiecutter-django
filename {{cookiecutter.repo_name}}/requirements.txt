@@ -1,1 +1,5 @@
 django<=1.9
+{% if cookiecutter.heroku.lower() == 'true' %}gunicorn
+dj_database_url
+dj-static
+psycopg2{% endif %}
