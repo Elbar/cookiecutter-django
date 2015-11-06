@@ -195,8 +195,7 @@ LOGGING = {
         },
     }
 }
-
-{% if cookiecutter.heroku %}
+{% if cookiecutter.heroku.lower() == 'true' %}
 if 'DYNO' in os.environ:
     # Heroku settings
     import dj_database_url
@@ -213,7 +212,6 @@ if 'DYNO' in os.environ:
     MEDIA_ROOT = ''
     STATICFILES_DIRS = ()
 {% endif %}
-
 try:
     from settings_local import *
 except ImportError:
