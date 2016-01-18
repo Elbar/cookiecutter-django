@@ -174,7 +174,7 @@ LOGGING = {
             'formatter': 'main_formatter',
         },
         'null': {
-            "class": 'django.utils.log.NullHandler',
+            "class": 'logging.NullHandler',
         }
     },
     'loggers': {
